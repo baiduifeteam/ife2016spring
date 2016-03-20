@@ -3,6 +3,7 @@
 
 仓库目录规范：
 
+<pre>
 tasknumber
   |----member1name
   |      |----task files
@@ -11,7 +12,7 @@ tasknumber
   |
   |----memberNname
          |----task files
-         
+</pre> 
 参考已建目录task1的结构。
 
 
