@@ -1,0 +1,65 @@
+$grid-columns: 12 !default;
+$grid-gap-width: 0px !default;
+$col-gap:20px !default;
+$col-height: 50px !default;
+$screen-sm: 768px !default;
+$screen-md: 992px !default;
+$screen-lg: 1200px !default;
+@mixin clearfix() {
+    &:before, &:after {
+        content: " ";
+        display: table;
+    }
+    &:after {
+        clear: both;
+    }
+}
+@mixin responsive-invisibility($parent) {
+    #{$parent} {
+        display: none !important;
+    }
+}
+@mixin make-common-style($i: 1, $list: ".g-col-xs-#{$i}, .g-col-sm-#{$i}, .g-col-md-#{$i}, .g-col-lg-#{$i}") {
+    @for $i from (1 + 1) through $grid-columns {
+        $list: "#{$list}, .g-col-xs-#{$i}, .g-col-sm-#{$i}, .g-col-md-#{$i}, .g-col-lg-#{$i}";
+    }
+    #{$list} {
+        position: relative;
+        min-height: 1px;
+        height: $col-height;
+        float: left;
+        padding-left: ceil(($grid-gap-width / 2));
+        padding-right: floor(($grid-gap-width / 2));
+        margin-left: ceil(($col-gap / 2));
+        margin-right: floor(($col-gap / 2));
+    }
+}
+@mixin make-row() {
+    .g-row{
+        padding-left:ceil(($col-gap / 2));
+        padding-right:floor(($col-gap / 2));
+        overflow: hidden;
+        @include clearfix;
+    }
+}
+@mixin make-grid($class) {
+    @for $i from 1 through $grid-columns {
+        .g-col-#{$class}-#{$i} {
+            width: calc(#{percentage(($i / $grid-columns))} - 20px - 2px);
+        }
+    }
+    @include responsive-invisibility(".g-col-" + $class + "-hidden");
+}
+@include make-common-style;
+@include make-grid(xs);
+@include make-row();
+@media (min-width: $screen-sm) {
+    @include make-grid(sm);
+}
+/* @media (min-width: $screen-md) {
+    @include make-grid(md);
+}
+@media (min-width: $screen-lg) {
+    @include make-grid(lg);
+} */
+
