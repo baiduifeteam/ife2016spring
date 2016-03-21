@@ -1,0 +1,60 @@
+<!DOCTYPE>
+<html>
+  <head>
+      <style>
+        body {
+          padding: 0;
+          margin: 0;
+        }
+
+        .container {
+          display: flex;
+          box-sizing: border-box;
+          width: 100%;
+          height: 100%;
+          padding: 20px;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .container .item {
+          box-sizing: border-box;
+          width: 150px;
+          border: 1px solid black;
+        }
+
+        .item1 { height: 120px; }
+        
+        .item2 { height: 100px; }
+        
+        .item3 { height: 40px; }
+        
+        .item4 { height: 200px; }
+        
+        @media (max-width: 640px) {
+          .container {
+            align-items: flex-start;
+          }
+
+          .item4 { order: 1; }
+          
+          .item1 { order: 2; }
+          
+          .item2 { order: 3; }
+          
+          .item3 { order: 4; }
+        }
+
+      </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="item item1"></div>
+      <div class="item item2"></div>
+      <div class="item item3"></div>
+      <div class="item item4"></div>
+    </div>
+  </body>
+</html>
