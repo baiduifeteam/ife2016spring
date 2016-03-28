@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript和树（一）</title>
+    <style type="text/css">
+    #bd {
+        margin: 0 auto;
+        width: 520px;
+        overflow: hidden;
+        padding: 10px;
+    }
+    
+    .leaf,
+    .root {
+        border: 1px solid #333;
+        text-align: center;
+        display: flex;
+        justify-content:space-around;
+        align-items:stretch;
+        overflow: hidden;
+        padding: 1%;
+        margin: 1%;
+        background-color: #fff;
+        transition: all 0.5s linear;
+    }
+    
+    .leaf {
+        width: 100%;
+        height: 85%;
+    }
+    
+    .root {
+        width: 500px;
+        height: 100px;
+    }
+    
+    .leaf:after,
+    .root:after {
+        content: attr(num);
+    }
+    
+    .traverse {
+        border: 1px solid #398439;
+        background-color: #449d44;
+        opacity: 0.6;
+    }
+    ul {
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+    }
+    
+    ul li {
+        color: #fff;
+        background-color: #5bc0de;
+        border-color: #46b8da;
+        display: inline-block;
+        padding: 6px 12px;
+        margin-bottom: 0;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.42857143;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+    
+    ul li:hover {
+        color: #fff;
+        background-color: #31b0d5;
+        border-color: #269abc
+    }
+    </style>
+</head>
+
+<body>
+    <div id="bd">
+        <ul id="btn-group">
+            <li order="preOrder">前序遍历</li>
+            <li order="inOrder">中序遍历</li>
+            <li order="postOrder">后序遍历</li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript">
+var addListener = window.addEventListener ?
+    function(el, type, fn) {
+        el.addEventListener(type, fn, false);
+    } :
+    function(el, type, fn) {
+        el.attachEvent('on' + type, fn);
+    };
+
+function BSTree() {
+    this._root = null;
+}
+BSTree.prototype = {
+    constructor: BSTree,
+    traverse: function(process, order) {
+        var order = order || "preOrder";
+
+        function inOrder(node) {
+            if (node) {
+                if (node.left !== null) {
+                    inOrder(node.left);
+                }
+                process.call(this, node);
+                if (node.right !== null) {
+                    inOrder(node.right);
+                }
+            }
+        }
+
+        function preOrder(node) {
+            if (node) {
+                process.call(this, node);
+                if (node.left !== null) {
+                    preOrder(node.left);
+                }
+                if (node.right !== null) {
+                    preOrder(node.right);
+                }
+            }
+        }
+
+        function postOrder(node) {
+            if (node) {
+                if (node.left !== null) {
+                    postOrder(node.left);
+                }
+                if (node.right !== null) {
+                    postOrder(node.right);
+                }
+                process.call(this, node);
+            }
+        }
+        switch (order) {
+            case "inOrder":
+                inOrder(this._root);
+                break;
+            case "preOrder":
+                preOrder(this._root);
+                break;
+            case "postOrder":
+                postOrder(this._root);
+                break;
+        }
+    },
+    add: function(value) {
+        var node = {
+                value: value,
+                parent: null,
+                left: null,
+                right: null
+            },
+            current;
+        if (this._root === null) {
+            this._root = node;
+        } else {
+            current = this._root;
+            while (true) {
+                if (value < current.value) {
+                    if (current.left === null) {
+                        node.parent = current;
+                        current.left = node;
+                        break;
+                    } else {
+                        current = current.left;
+                    }
+                } else if (value > current.value) {
+                    if (current.right === null) {
+                        node.parent = current;
+                        current.right = node;
+                        break;
+                    } else {
+                        current = current.right;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        return this;
+    },
+    contains: function(value) {
+        var found = false,
+            current = this._root;
+        while (!found && current) {
+            if (value < current.value) {
+                current = current.left;
+            } else if (value > current.value) {
+                current = current.right;
+            } else {
+                found = true;
+            }
+        }
+        return found;
+    },
+    remove: function() {
+        var found = false,
+            parent = null,
+            current = this._root,
+            childCount,
+            replacement,
+            replacementParent;
+
+        while (!found && current) {
+            if (value < current.value) {
+                parent = current;
+                current = current.left;
+            } else if (value > current.value) {
+                parent = current;
+                current = current.right;
+
+            } else {
+                found = true;
+            }
+        }
+        if (found) {
+            childCount = (current.left !== null ? 1 : 0) +
+                (current.right !== null ? 1 : 0);
+            if (current === this._root) {
+                switch (childCount) {
+                    case 0:
+                        this._root = null;
+                        break;
+                    case 1:
+                        this._root = (current.right === null ?
+                            current.left : current.right);
+                        this._root.parent = null;
+                        break;
+                    case 2:
+                        replacement = this._root.left;
+                        while (replacement.right !== null) {
+                            replacementParent = replacement;
+                            replacement = replacement.right;
+                        }
+                        if (replacementParent !== null) {
+                            replacementParent.right = replacement.left;
+                            replacement.right = this._root.right;
+                            replacement.left = this._root.left;
+                        } else {
+                            replacement.right = this._root.right;
+                        }
+                        this._root = replacement;
+                }
+            } else {
+                switch (childCount) {
+                    case 0:
+                        if (current.value < parent.value) {
+                            parent.left = null;
+                        } else {
+                            parent.right = null;
+                        }
+                        break;
+                    case 1:
+                        if (current.value < parent.value) {
+                            parent.left = (current.left === null ?
+                                current.right : current.left);
+                            parent.left.parent = parent;
+                        } else {
+                            parent.right = (current.left === null ?
+                                current.right : current.left);
+                            parent.right.parent = parent;
+                        }
+                        break;
+                    case 2:
+                        replacement = current.left;
+                        replacementParent = current;
+                        while (replacement.right !== null) {
+                            replacementParent = replacement;
+                            replacement = replacement.right;
+                        }
+                        replacementParent.right = replacement.left;
+                        replacement.right = current.right;
+                        replacement.left = current.left;
+                        if (current.value < parent.value) {
+                            parent.left = replacement;
+                        } else {
+                            parent.right = replacement;
+                        }
+
+                }
+            }
+        }
+    },
+    toArray: function() {
+        var result = [];
+        this.traverse(function(node) {
+            result.push(node.value);
+        });
+        return result;
+    },
+    toString: function() {
+        return this.toArray().toString();
+    },
+    size: function() {
+        var length = 0;
+        this.traverse(function(node) {
+            length++;
+        });
+        return length;
+    }
+}
+var bst = new BSTree(),
+    result = [],
+    intervalId, prev = null;
+bst.add(8).add(3).add(10).add(1).add(14).add(13).add(6).add(4).add(7);
+bst.traverse(function(cur) {
+    var ele = document.createElement("div");
+    ele.setAttribute("num", cur.value);
+    cur.ele = ele;
+    if (cur.parent === null) {
+        ele.classList.add("root");
+        document.getElementById("bd").appendChild(ele);
+    } else {
+        ele.classList.add("leaf");
+        cur.parent.ele.appendChild(ele);
+    }
+})
+
+addListener(document.getElementById("btn-group"), "click", function(e) {
+    if (e.target && e.target.nodeName.toLowerCase() == "li") {
+        if (prev)prev.ele.classList.remove("traverse");
+        prev=null;
+        result=[];
+        clearInterval(intervalId);
+        var target = e.target;
+        bst.traverse(function(cur) {
+            result.push(cur);
+        }, target.getAttribute("order"))
+        intervalId = setInterval(function() {
+            if (prev) prev.ele.classList.remove("traverse");
+            if (result.length) {
+                var cur = result.shift();
+                cur.ele.classList.add("traverse");
+                prev = cur;
+            } else {
+                clearInterval(intervalId);
+            }
+        }, 1500)
+    }
+})
+</script>
+
+</html>
